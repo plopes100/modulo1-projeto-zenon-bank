@@ -6,7 +6,7 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
-public class Principal {
+public class Principal02 {
 
 	public static void main(String[] args) {
 		String pastaAtual = System.getProperty("user.dir");
