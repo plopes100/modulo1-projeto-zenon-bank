@@ -68,13 +68,35 @@ public class Principal02 {
     }
 	
 	public static Transacao getTransacao(String linha) {
+		String[] nomes = "step,type,amount,nameOrig,oldbalanceOrg,newbalanceOrig,nameDest,oldbalanceDest,newbalanceDest,isFraud,isFlaggedFraud".split(",");
 		String[] campos = linha.split(",");
+		
+		for (int ind = 0; ind < campos.length; ind++) {
+			if (campos[ind] == null) {
+				throw new IllegalArgumentException("O Campo: "+nomes[ind]+" não pode estar sem informação");
+			}
+		}
+		
+		if (Long.valueOf(campos[0]) <= 0) {
+			throw new IllegalArgumentException("step should be positive: "+ campos[0]);
+		}
+		int[] indCampos = {2, 4, 5, 7, 8};
+		for (int i = 0; i < indCampos.length; i++) {
+			if (new BigDecimal(campos[indCampos[i]]).compareTo(BigDecimal.ZERO) < 0) {
+				throw new IllegalArgumentException(nomes[indCampos[i]]+" should be positive: " +campos[indCampos[i]]);
+			}
+		}
+
+		if ((campos[3].trim().isEmpty()) || (campos[6].trim().isEmpty())) {
+			throw new IllegalArgumentException("name should not be empty");
+		}
+		
 		Cliente clienteOrigem  = new Cliente(campos[3], new BigDecimal(campos[4]), new BigDecimal(campos[5]));
 		Cliente clienteDestino = new Cliente(campos[6], new BigDecimal(campos[7]), new BigDecimal(campos[8]));
 		Transacao transacao = new Transacao(
 				Long.valueOf(campos[0]), 
-				TipoTransacao.valueOf(campos[1]),
-				new BigDecimal(campos[2].toUpperCase()),
+				TipoTransacao.valueOf(campos[1].toUpperCase()),
+				new BigDecimal(campos[2]),
 				clienteOrigem,
 				clienteDestino,
 				"1".equals(campos[9]),
